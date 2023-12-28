@@ -1,50 +1,82 @@
 package com.likelion.news.adapter;
 
-import com.likelion.news.dto.CrawledNewsDto;
-import org.springframework.beans.factory.annotation.Value;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.HashMap;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import static java.lang.reflect.Array.get;
+import java.util.Properties;
 
 
 @Component
 public class NaverNewsSearchAdapter {
 
-    @Value("news.naver.api.url")
-    private String NAVER_API_URL;
+        private List<String> selectedCategories;
+        private LocalDateTime startDate;
+        private LocalDateTime endDate;
 
-    @Value("news.naver.api.client-id")
-    private String NAVER_API_CLIENT_ID;
 
-    @Value("news.naver.api.client-secret")
-    private String NAVER_API_CLIENT_SECRET;
-
-    public List<CrawledNewsDto.CrawledInfo> search(){
-        String text = null;
-        try {
-            text = URLEncoder.encode("그린팩토리", "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("검색어 인코딩 실패",e);
+        public void setCategory(String... categories) {
+            // Validation and setting categories
         }
 
+        public void setDateRange(String startDateStr, String endDateStr) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            this.startDate = LocalDateTime.parse(startDateStr, formatter);
+            this.endDate = LocalDateTime.parse(endDateStr, formatter);
+        }
 
-        String apiURL = NAVER_API_URL + "?query=" + text;    // JSON 결과
-        //String apiURL = "https://openapi.naver.com/v1/search/blog.xml?query="+ text; // XML 결과
-
-
-        Map<String, String> requestHeaders = new HashMap<>();
-        requestHeaders.put("X-Naver-Client-Id", clientId);
-        requestHeaders.put("X-Naver-Client-Secret", clientSecret);
-        String responseBody = get(apiURL,requestHeaders);
-
-
-        System.out.println(responseBody);
+    public void startCrawling() {
+        crawl();
     }
 
-}
+    private void crawl() {
+        String url = "http://news.naver.com/main/list.nhn?mode=LSD&mid=sec&sid1=100&page=1";
+        try {
+
+            List<String> postUrls = new ArrayList<>();
+            // 각 페이지에 있는 기사들 가져오기
+            Element body = Jsoup.connect(url).get().body();
+            Elements tempPost = body.select(".newsflash_body .type06_headline li dl"); // Update your_selector to match your HTML structure
+
+            tempPost.addAll(body.select(".newsflash_body .type06 li dl")) ;
+
+            // 각 페이지에 있는 기사들의 url 저장
+            for (Element element : tempPost) {
+                Element link = element.selectFirst("a[href]");
+
+                String href = link.attr("href");
+                postUrls.add(href);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+        private String getUrlData(String urlString) throws IOException {
+            URL url = new URL(urlString);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            // Implement the HTTP request and response handling
+            return ""; // Return the response content
+        }
+
+        private void insertArticleData(Connection conn, String... articleData) {
+            // Implement database insert logic
+        }
+
+    }
+
+

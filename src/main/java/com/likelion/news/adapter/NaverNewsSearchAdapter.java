@@ -1,7 +1,6 @@
 package com.likelion.news.adapter;
 
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
@@ -10,13 +9,10 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 
 @Component
@@ -38,11 +34,46 @@ public class NaverNewsSearchAdapter {
         }
 
     public void startCrawling() {
-        crawl();
+            try {
+                crawl();
+            }catch (InterruptedException e){
+                e.printStackTrace();
+            }
     }
 
-    private void crawl() {
+    private void crawl() throws InterruptedException {
         String url = "http://news.naver.com/main/list.nhn?mode=LSD&mid=sec&sid1=100&page=1";
+        List<String> articleUrls = getArticleUrl(url);
+
+        for(String articleUrl : articleUrls){
+            Thread.sleep(1000);
+            crawlArticleDetail(articleUrl);
+        }
+
+    }
+
+    private void crawlArticleDetail(String articleUrl) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+            Element articleHtml = Jsoup.connect(articleUrl).get();
+
+            String articleTitle = articleHtml.select("h2.media_end_head_headline").text();
+            String articleContent = articleHtml.select("article#dic_area").text();
+            String author = articleHtml.select("meta[property=og:article:author]").attr("content");
+            LocalDateTime dateTime = LocalDateTime.parse(articleHtml.select("span.media_end_head_info_datestamp_time._ARTICLE_DATE_TIME").attr("data-date-time"), formatter);
+
+            System.out.println();
+
+
+
+        }catch (IOException e){
+            throw new RuntimeException();
+        }
+
+    }
+
+    private List<String> getArticleUrl(String url) {
         try {
 
             List<String> postUrls = new ArrayList<>();
@@ -58,14 +89,17 @@ public class NaverNewsSearchAdapter {
 
                 String href = link.attr("href");
                 postUrls.add(href);
+
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            return postUrls;
+        } catch (Exception e) {
+            throw new RuntimeException();
         }
     }
 
 
-        private String getUrlData(String urlString) throws IOException {
+    private String getUrlData(String urlString) throws IOException {
             URL url = new URL(urlString);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");

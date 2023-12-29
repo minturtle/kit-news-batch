@@ -15,6 +15,17 @@ logging:
   level:
     org.hibernate.SQL: debug
 
-
+clova:
+  url: https://naveropenapi.apigw.ntruss.com/text-summary/v1/summarize
+  client:
+    id: bb}
+    secret: aa
+  summary:
+    size: 50
+    minimum-content-size: 10
+    maximum-content-size: 20
+nanoId:
+  alphabet: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
+  length: 10
 
 

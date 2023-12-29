@@ -3,7 +3,7 @@ package com.likelion.news.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.likelion.news.dto.ClovaSummaryRequest;
+import com.likelion.news.dto.ApiDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -93,7 +93,7 @@ class ClovaApiCallServiceTest {
         when(environment.getProperty("clova.client.id")).thenReturn("test-id");
         when(environment.getProperty("clova.client.secret")).thenReturn("test-secret");
 
-        ClovaSummaryRequest summaryReq = createSummaryRequest();
+        ApiDto.ClovaSummaryRequest summaryReq = createSummaryRequest();
 
         //when
 
@@ -105,20 +105,20 @@ class ClovaApiCallServiceTest {
 
     }
 
-    private ClovaSummaryRequest createSummaryRequest() {
-        ClovaSummaryRequest.ClovaRequestOption option = ClovaSummaryRequest.ClovaRequestOption.builder()
-                .language(ClovaSummaryRequest.ClovaRequestOptionLanguage.KOREAN.getValue())
+    private ApiDto.ClovaSummaryRequest createSummaryRequest() {
+        ApiDto.ClovaSummaryRequest.ClovaRequestOption option = ApiDto.ClovaSummaryRequest.ClovaRequestOption.builder()
+                .language(ApiDto.ClovaSummaryRequest.ClovaRequestOptionLanguage.KOREAN.getValue())
                 .summaryCount(2)
-                .tone(ClovaSummaryRequest.ClovaRequestOptionTone.원문_어투_유지.getValue())
-                .model(ClovaSummaryRequest.ClovaRequestOptionModel.NEWS.getValue())
+                .tone(ApiDto.ClovaSummaryRequest.ClovaRequestOptionTone.원문_어투_유지.getValue())
+                .model(ApiDto.ClovaSummaryRequest.ClovaRequestOptionModel.NEWS.getValue())
                 .build();
 
-        ClovaSummaryRequest.ClovaRequestDocument document = ClovaSummaryRequest.ClovaRequestDocument.builder()
+        ApiDto.ClovaSummaryRequest.ClovaRequestDocument document = ApiDto.ClovaSummaryRequest.ClovaRequestDocument.builder()
                 .title("hello")
                 .content("test")
                 .build();
 
-        ClovaSummaryRequest summaryReq = ClovaSummaryRequest.builder()
+        ApiDto.ClovaSummaryRequest summaryReq = ApiDto.ClovaSummaryRequest.builder()
                 .document(document)
                 .option(option)
                 .build();

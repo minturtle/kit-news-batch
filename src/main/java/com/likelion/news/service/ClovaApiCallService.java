@@ -1,16 +1,13 @@
 package com.likelion.news.service;
 
 
-import com.likelion.news.dto.ApiServiceRequest;
-import com.likelion.news.dto.ApiServiceResponse;
-import com.likelion.news.dto.ClovaSummaryRequest;
-import com.likelion.news.dto.ClovaSummaryResponse;
+import com.likelion.news.dto.*;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 
-@Component
+@Service
 public class ClovaApiCallService {
 
     private final ApiCallService apiCallService;
@@ -35,7 +32,7 @@ public class ClovaApiCallService {
      * @return res summary 값
      * @exception
      */
-    public String getSummary(ClovaSummaryRequest req){
+    public String getSummary(ApiDto.ClovaSummaryRequest req){
         String clovaUrl = env.getProperty("clova.url");
 
         HashMap<String, String> reqHeaders = new HashMap<>();
@@ -44,33 +41,33 @@ public class ClovaApiCallService {
         reqHeaders.put(CLIENT_SECRET_HEADER, env.getProperty("clova.client.secret"));
         reqHeaders.put("Content-Type", "application/json");
 
-        ApiServiceRequest apiServiceRequest = ApiServiceRequest.builder()
+        ApiDto.ApiServiceRequest apiServiceRequest = ApiDto.ApiServiceRequest.builder()
                 .url(clovaUrl)
                 .headers(reqHeaders)
-                .requestType(ApiServiceRequest.RequestType.POST)
+                .requestType(ApiDto.ApiServiceRequest.RequestType.POST)
                 .body(req)
                 .build();
 
 
-        ApiServiceResponse<ClovaSummaryResponse> resp = apiCallService.callApi(apiServiceRequest, ClovaSummaryResponse.class);
+        ApiDto.ApiServiceResponse<ApiDto.ClovaSummaryResponse> resp = apiCallService.callApi(apiServiceRequest, ApiDto.ClovaSummaryResponse.class);
 
         return resp.getBody().getSummary();
     }
 
-    public ClovaSummaryRequest createDefaultNewsRequest(String title, String content) {
-        ClovaSummaryRequest.ClovaRequestOption option = ClovaSummaryRequest.ClovaRequestOption.builder()
-                .language(ClovaSummaryRequest.ClovaRequestOptionLanguage.KOREAN.getValue())
+    public ApiDto.ClovaSummaryRequest createDefaultNewsRequest(String title, String content) {
+        ApiDto.ClovaSummaryRequest.ClovaRequestOption option = ApiDto.ClovaSummaryRequest.ClovaRequestOption.builder()
+                .language(ApiDto.ClovaSummaryRequest.ClovaRequestOptionLanguage.KOREAN.getValue())
                 .summaryCount(2)
-                .tone(ClovaSummaryRequest.ClovaRequestOptionTone.원문_어투_유지.getValue())
-                .model(ClovaSummaryRequest.ClovaRequestOptionModel.NEWS.getValue())
+                .tone(ApiDto.ClovaSummaryRequest.ClovaRequestOptionTone.원문_어투_유지.getValue())
+                .model(ApiDto.ClovaSummaryRequest.ClovaRequestOptionModel.NEWS.getValue())
                 .build();
 
-        ClovaSummaryRequest.ClovaRequestDocument document = ClovaSummaryRequest.ClovaRequestDocument.builder()
+        ApiDto.ClovaSummaryRequest.ClovaRequestDocument document = ApiDto.ClovaSummaryRequest.ClovaRequestDocument.builder()
                 .title(title)
                 .content(content)
                 .build();
 
-        ClovaSummaryRequest summaryReq = ClovaSummaryRequest.builder()
+        ApiDto.ClovaSummaryRequest summaryReq = ApiDto.ClovaSummaryRequest.builder()
                 .document(document)
                 .option(option)
                 .build();

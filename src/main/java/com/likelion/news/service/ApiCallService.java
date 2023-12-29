@@ -2,8 +2,7 @@ package com.likelion.news.service;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.likelion.news.dto.ApiServiceRequest;
-import com.likelion.news.dto.ApiServiceResponse;
+import com.likelion.news.dto.ApiDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +32,7 @@ public class ApiCallService {
      * @return Api 결과값(상태 코드, Body)등이 담긴 객체
      * @exception RuntimeException API 호출중 오류가 발생한 경우
      */
-    public<T> ApiServiceResponse<T> callApi(ApiServiceRequest req, Class<T> responseBodyMappingClass) {
+    public<T> ApiDto.ApiServiceResponse<T> callApi(ApiDto.ApiServiceRequest req, Class<T> responseBodyMappingClass) {
         try {
             return callApiProcess(req, responseBodyMappingClass);
         }catch (Exception e){
@@ -41,7 +40,7 @@ public class ApiCallService {
         }
     }
 
-    private <T> ApiServiceResponse<T> callApiProcess(ApiServiceRequest req, Class<T> responseBodyMappingClass) throws IOException {
+    private <T> ApiDto.ApiServiceResponse<T> callApiProcess(ApiDto.ApiServiceRequest req, Class<T> responseBodyMappingClass) throws IOException {
         StringBuilder result = new StringBuilder();
         URL url = new URL(req.getUrl());
 
@@ -64,7 +63,7 @@ public class ApiCallService {
         }
         T resultBody = objectMapper.readValue(result.toString(), responseBodyMappingClass);
 
-        ApiServiceResponse<T> resp = ApiServiceResponse.<T>builder()
+        ApiDto.ApiServiceResponse<T> resp = ApiDto.ApiServiceResponse.<T>builder()
                 .body(resultBody)
                 .statusCode(conn.getResponseCode())
                 .build();

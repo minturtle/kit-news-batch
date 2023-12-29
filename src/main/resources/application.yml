@@ -18,7 +18,10 @@ clova:
   client:
     id: ${clova.client.id}
     secret: ${clova.client.secret}
-
+  summary:
+    size: 3
+    minimum-content-size: 100
+    maximum-content-size: 2000
 nanoId:
   alphabet: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
   length: 10

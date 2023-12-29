@@ -54,7 +54,7 @@ public class NaverNewsCrawler {
         List<String> articleUrls = getArticleUrls(url);
 
         for(String articleUrl : articleUrls){
-            Thread.sleep(1000);
+            Thread.sleep(2000);
             Optional<CrawledNewsDto.CrawledInfo> article = crawlArticleDetail(articleUrl, category);
 
             if(article.isEmpty()){
@@ -98,11 +98,8 @@ public class NaverNewsCrawler {
 
 
 
-        }catch (DateTimeParseException e){
+        }catch (Exception e){
             return Optional.empty();
-        }
-        catch (Exception e){
-            throw new RuntimeException();
         }
     }
 
@@ -127,7 +124,7 @@ public class NaverNewsCrawler {
 
             return postUrls;
         } catch (Exception e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 

@@ -37,7 +37,7 @@ public class CrawledNewsDto {
                     .articleContent(articleContent)
                     .media(media)
                     .articleLink(articleLink)
-                    .articleDateTime(articleDateTime)
+                    .articleDatetime(articleDateTime)
                     .articleCategory(articleCategory.name())
                     .uid(uid)
                     .build();

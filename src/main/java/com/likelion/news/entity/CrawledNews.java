@@ -19,7 +19,7 @@ public class CrawledNews {
     @Column(name = "crawled_news_id", nullable = false)
     private Long crawledNewsId;
 
-    private LocalDateTime articleDateTime;
+    private LocalDateTime articleDatetime;
 
     private String articleCategory;
 

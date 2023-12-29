@@ -10,14 +10,14 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+    hibernate:
+      ddl-auto: validate
 
-
-news:
-  naver:
-    api:
-      url: https://openapi.naver.com/v1/search/blog
-      client-id: ${news.naver.api.client-id}
-      client-secret: ${news.naver.api.client-secret}
+clova:
+  url: https://naveropenapi.apigw.ntruss.com/text-summary/v1/summarize
+  client:
+    id: ${clova.client.id}
+    secret: ${clova.client.secret}
 
 nanoId:
   alphabet: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789

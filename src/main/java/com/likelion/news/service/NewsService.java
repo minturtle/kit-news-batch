@@ -7,7 +7,6 @@ import com.likelion.news.enums.ArticleCategory;
 import com.likelion.news.repository.CrawledNewsRepository;
 import com.likelion.news.utils.NanoIdProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,13 +40,22 @@ public class NewsService {
         for(ArticleCategory category : categories){
             List<CrawledNewsDto.CrawledInfo> articles = naverNewsCrawler.startCrawling(category, date, size);
 
-            List<CrawledNews> entities = articles.stream().map(c -> c.toEntity(nanoIdProvider.createNanoId())).toList();
-
-            crawledNewsRepository.saveAll(entities);
+            saveArticleInDB(articles);
 
         }
 
 
+
+    }
+
+
+
+
+
+    private void saveArticleInDB(List<CrawledNewsDto.CrawledInfo> articles) {
+        List<CrawledNews> entities = articles.stream().map(c -> c.toEntity(nanoIdProvider.createNanoId())).toList();
+
+        crawledNewsRepository.saveAll(entities);
     }
 
 }

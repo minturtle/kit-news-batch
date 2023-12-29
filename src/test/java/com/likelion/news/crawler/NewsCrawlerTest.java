@@ -1,4 +1,4 @@
-package com.likelion.news.adapter;
+package com.likelion.news.crawler;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,10 +15,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class)
 @ActiveProfiles("test")
-class NewsSearchAdapterTest {
+class NewsCrawlerTest {
 
     @Autowired
-    private NaverNewsSearchAdapter naverNewsSearchAdapter;
+    private NaverNewsCrawler naverNewsCrawler;
 
     @Test
     @DisplayName("")
@@ -26,7 +26,7 @@ class NewsSearchAdapterTest {
         //given
 
         //when
-        naverNewsSearchAdapter.startCrawling();
+        naverNewsCrawler.startCrawling();
         //then
 
     }
@@ -36,8 +36,8 @@ class NewsSearchAdapterTest {
     public static class TestConfig{
 
         @Bean
-        public NaverNewsSearchAdapter naverNewsSearchAdapter(){
-            return new NaverNewsSearchAdapter();
+        public NaverNewsCrawler naverNewsSearchAdapter(){
+            return new NaverNewsCrawler();
         }
 
     }

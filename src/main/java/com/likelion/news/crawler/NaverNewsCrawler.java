@@ -1,5 +1,6 @@
-package com.likelion.news.adapter;
+package com.likelion.news.crawler;
 
+import com.likelion.news.enums.ArticleCategory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -16,33 +17,21 @@ import java.util.List;
 
 
 @Component
-public class NaverNewsSearchAdapter {
-
-        private List<String> selectedCategories;
-        private LocalDateTime startDate;
-        private LocalDateTime endDate;
-
-
-        public void setCategory(String... categories) {
-            // Validation and setting categories
-        }
-
-        public void setDateRange(String startDateStr, String endDateStr) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            this.startDate = LocalDateTime.parse(startDateStr, formatter);
-            this.endDate = LocalDateTime.parse(endDateStr, formatter);
-        }
+public class NaverNewsCrawler {
 
     public void startCrawling() {
             try {
-                crawl();
+                crawl(ArticleCategory.Naver.IT_SCIENCE, 1, LocalDateTime.now());
             }catch (InterruptedException e){
                 e.printStackTrace();
             }
     }
 
-    private void crawl() throws InterruptedException {
-        String url = "http://news.naver.com/main/list.nhn?mode=LSD&mid=sec&sid1=100&page=1";
+    private void crawl(ArticleCategory.Naver category, int page, LocalDateTime date) throws InterruptedException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String formattedDate = date.format(formatter);
+
+        String url = String.format("http://news.naver.com/main/list.nhn?mode=LSD&mid=sec&sid1=%s&page=%d&date=%s", category.getSid(), page, formattedDate);
         List<String> articleUrls = getArticleUrl(url);
 
         for(String articleUrl : articleUrls){
@@ -67,8 +56,8 @@ public class NaverNewsSearchAdapter {
 
 
 
-        }catch (IOException e){
-            throw new RuntimeException();
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
     }
@@ -99,18 +88,6 @@ public class NaverNewsSearchAdapter {
     }
 
 
-    private String getUrlData(String urlString) throws IOException {
-            URL url = new URL(urlString);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-            // Implement the HTTP request and response handling
-            return ""; // Return the response content
-        }
-
-        private void insertArticleData(Connection conn, String... articleData) {
-            // Implement database insert logic
-        }
-
-    }
+}
 
 

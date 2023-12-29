@@ -1,15 +1,23 @@
 package com.likelion.news.dto;
 
+import com.likelion.news.enums.ArticleCategory;
 import jakarta.persistence.Lob;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
 public class CrawledNewsDto {
 
+
+    @AllArgsConstructor
+    @Builder
+    @Data
     public static class CrawledInfo {
         private LocalDateTime articleDateTime;
 
-        private String articleCategory;
+        private ArticleCategory articleCategory;
 
         private String media;
 
@@ -19,6 +27,7 @@ public class CrawledNewsDto {
         private String articleContent;
 
         private String articleLink;
+
     }
 
 }

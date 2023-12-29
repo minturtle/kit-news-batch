@@ -1,5 +1,6 @@
 package com.likelion.news.dto;
 
+import com.likelion.news.entity.CrawledNews;
 import com.likelion.news.enums.ArticleCategory;
 import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,19 @@ public class CrawledNewsDto {
 
         private String articleLink;
 
+
+
+        public CrawledNews toEntity(String uid){
+            return CrawledNews.builder()
+                    .articleTitle(articleTitle)
+                    .articleContent(articleContent)
+                    .media(media)
+                    .articleLink(articleLink)
+                    .articleDateTime(articleDateTime)
+                    .articleCategory(articleCategory.name())
+                    .uid(uid)
+                    .build();
+        }
     }
 
 }

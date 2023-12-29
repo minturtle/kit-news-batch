@@ -18,3 +18,7 @@ news:
       url: https://openapi.naver.com/v1/search/blog
       client-id: ${news.naver.api.client-id}
       client-secret: ${news.naver.api.client-secret}
+
+nanoId:
+  alphabet: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
+  length: 10

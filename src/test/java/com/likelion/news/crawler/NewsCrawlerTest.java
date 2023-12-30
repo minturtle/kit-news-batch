@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockserver.model.HttpRequest.request;
@@ -126,6 +127,33 @@ class NewsCrawlerTest {
         assertThat(article.getArticleDateTime()).isEqualTo(LocalDateTime.of(2023,12,30,22,30,10));
 
     }
+
+    @Test
+    @DisplayName("뉴스 상세 크롤링시, 서버가 200아닌 코드를 리턴한다면 Option.empty를 리턴한다.")
+    void testCrawlDetailReturnsEmpty(){
+        // given
+        String givenUrl = "http://localhost/mnews/article/029/0002846461?sid=105";
+
+        new MockServerClient("localhost", PORT)
+                .when(
+                        request()
+                                .withMethod("GET")
+                                .withPath("/mnews/article/029/0002846461")
+                                .withQueryStringParameters(List.of(
+                                        Parameter.param("sid", "105")
+                                ))
+                )
+                .respond(
+                        response()
+                                .withStatusCode(404)
+                );
+        // when
+        Optional<CrawledNewsDto.CrawledInfo> articleOptional = naverNewsCrawler.crawlArticleDetail(givenUrl, ArticleCategory.IT_SCIENCE);
+
+        // then
+        assertThat(articleOptional.isEmpty()).isTrue();
+    }
+
 
     private String getMockArticleDetail() {
         String filePath = "src/main/resources/test/article_detail_example.html"; // 파일 경로

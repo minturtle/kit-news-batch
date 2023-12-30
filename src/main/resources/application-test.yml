@@ -29,3 +29,6 @@ nanoId:
   length: 10
 
 
+news:
+  host:
+    naver: http://localhost

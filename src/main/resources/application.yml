@@ -25,3 +25,7 @@ clova:
 nanoId:
   alphabet: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
   length: 10
+
+news:
+  host:
+    naver: http://news.naver.com

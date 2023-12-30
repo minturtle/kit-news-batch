@@ -1,6 +1,7 @@
 package com.likelion.news.scheduler;
 
 import com.likelion.news.dto.ApiDto;
+import com.likelion.news.dto.CrawledNewsDto;
 import com.likelion.news.dto.RefinedNewsDto;
 import com.likelion.news.entity.CrawledNews;
 import com.likelion.news.enums.ArticleCategory;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -35,7 +37,23 @@ public class NewsScheduler {
         try{
             log.info("Crawler Scheduler Started");
 
-            newsService.crawl(Arrays.stream(ArticleCategory.values()).toList(), 10, LocalDate.now());
+
+            for(ArticleCategory category : Arrays.stream(ArticleCategory.values()).toList()){
+                List<String> articleUrls = newsService.getArticleUrls(category, 10, LocalDate.now());
+
+
+                for(String articleUrl : articleUrls){
+                    Optional<CrawledNewsDto.CrawledInfo> articleDetail =
+                            newsService.getArticleDetail(articleUrl, category);
+
+                    if(articleDetail.isEmpty()){
+                        continue;
+                    }
+                    newsService.save(articleDetail.get());
+
+                }
+            }
+
 
 
 

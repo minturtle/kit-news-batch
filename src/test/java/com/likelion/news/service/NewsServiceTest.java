@@ -34,20 +34,6 @@ class NewsServiceTest {
     @Autowired
     private CrawledNewsRepository crawledNewsRepository;
 
-    @Test
-    @DisplayName("뉴스를 크롤링하고 이를 저장할 수 있다")
-    public void testNewsCrawl() throws Exception{
-        //given
-
-        //when
-        newsService.crawl(List.of(ArticleCategory.IT_SCIENCE, ArticleCategory.ECONOMY), 5, LocalDate.now());
-        //then
-        List<CrawledNews> actual = StreamSupport.stream(
-                crawledNewsRepository.findAll().spliterator(), false).toList();
-
-        assertThat(actual).hasSize(10);
-    }
-
 
     @RepeatedTest(100)
     @DisplayName("본문 크기가 10~20인 뉴스를 랜덤하게 가져올 수 있다.")

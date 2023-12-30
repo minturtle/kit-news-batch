@@ -16,10 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -44,26 +41,70 @@ public class NewsService {
     private int maximumSize;
 
     /**
+     * @param category 뉴스 카테고리
+     * @param date       뉴스의 작성일
+     * @param size  카테고리 기사 URL의 갯수
+     * @return
+     * @throws
      * @author minseok kim
      * @description 뉴스를 크롤링하는 메서드, 크롤링된 뉴스는 DB에 저장된다.
-     * @param categories 뉴스 카테고리
-     * @param size 각 카테고리 별 크롤링할 뉴스의 개수
-     * @param  date 뉴스의 작성일
-     * @exception
-    */
+     */
 
-    @Transactional
-    public void crawl(List<ArticleCategory> categories, int size, LocalDate date){
+    public List<String> getArticleUrls(ArticleCategory category, int size, LocalDate date){
 
-        for(ArticleCategory category : categories){
-            List<CrawledNewsDto.CrawledInfo> articles = naverNewsCrawler.startCrawling(category, date, size);
+        List<String> result = new ArrayList<>(size);
 
-            saveArticleInDB(articles);
+        int page = 1;
+
+        loop : while(true){
+            List<String> articleUrls = naverNewsCrawler.crawlArticleUrls(category, page, date);
+            if(articleUrls.isEmpty()){
+                break;
+            }
+
+            for(int i = 0; i < articleUrls.size(); i++){
+                result.add(articleUrls.get(0));
+                if(result.size() >= size){
+                    break loop;
+                }
+            }
+
+            result.addAll(articleUrls);
 
         }
 
 
 
+
+        return result;
+    }
+
+
+
+    /**
+     * @description URL에 해당하는 기사 정보를 조회하는 메서드
+     * @author minseok kim
+     * @param url 기사의 URL
+     * @param category 기사의 카테고리
+     * @throws
+    */
+    public Optional<CrawledNewsDto.CrawledInfo> getArticleDetail(String url, ArticleCategory category){
+        return naverNewsCrawler.crawlArticleDetail(url, category);
+    }
+
+
+
+    /**
+     * @description 크롤링한 기사 정보를 저장하는 메서드
+     * @author minseok kim
+     * @param article 기사 정보
+    */
+    @Transactional
+    public void save(CrawledNewsDto.CrawledInfo article){
+
+        CrawledNews entity = article.toEntity(nanoIdProvider.createNanoId());
+
+        crawledNewsRepository.save(entity);
     }
 
 

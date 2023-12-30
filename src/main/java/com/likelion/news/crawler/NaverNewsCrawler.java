@@ -5,12 +5,12 @@ import com.likelion.news.enums.ArticleCategory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,62 +19,48 @@ import java.util.Optional;
 @Component
 public class NaverNewsCrawler {
 
-    public List<CrawledNewsDto.CrawledInfo> startCrawling(ArticleCategory category, LocalDate date, int resultSize) {
-        List<CrawledNewsDto.CrawledInfo> result = new ArrayList<>(resultSize);
+
+
+    @Value("${news.host.naver}")
+    private String newsSiteHost;
+
+    /**
+     * @description 해당 Category에 맞는 기사의 link를 가져오는 메서드
+     * @author minseok kim
+     * @param category 검색하고자 하는 기사의 카테고리
+     * @param page 리스트 페이지 네이션
+     * @param date 검색하고자 하는 기사의 발행일
+     * @throws
+    */
+    public List<String> crawlArticleUrls(ArticleCategory category, int page, LocalDate date){
+
+        String url = createSearchUrl(category, page, date);
 
         try {
 
-            int page = 1;
+            List<String> postUrls = new ArrayList<>();
+            // 각 페이지에 있는 기사들 가져오기
+            Element body = Jsoup.connect(url).get().body();
+            Elements tempPost = body.select(".newsflash_body .type06_headline li dl"); // Update your_selector to match your HTML structure
 
-            loop : while(true){
-                List<CrawledNewsDto.CrawledInfo> articleList = crawl(category, page, date);
+            tempPost.addAll(body.select(".newsflash_body .type06 li dl")) ;
 
-                for(CrawledNewsDto.CrawledInfo article : articleList){
-                    result.add(article);
-                    // 파라미터로 넘어오는 갯수가 초과할 때까지 크롤링 및 삽입
-                    if(resultSize <= result.size()){
-                        break loop;
-                    }
-                }
-                page++;
+            // 각 페이지에 있는 기사들의 url 저장
+            for (Element element : tempPost) {
+                Element link = element.selectFirst("a[href]");
+
+                String href = link.attr("href");
+                postUrls.add(href);
+
             }
 
-        }catch (InterruptedException e){
-            e.printStackTrace();
+            return postUrls;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-
-        return result;
     }
 
-    private List<CrawledNewsDto.CrawledInfo> crawl(ArticleCategory category, int page, LocalDate date) throws InterruptedException {
-
-        List<CrawledNewsDto.CrawledInfo> result = new ArrayList<>();
-
-        String url = createSearchUrl(category, page, date);
-        List<String> articleUrls = getArticleUrls(url);
-
-        for(String articleUrl : articleUrls){
-            Thread.sleep(2000);
-            Optional<CrawledNewsDto.CrawledInfo> article = crawlArticleDetail(articleUrl, category);
-
-            if(article.isEmpty()){
-                continue;
-            }
-
-            result.add(article.get());
-        }
-
-        return result;
-    }
-
-    private String createSearchUrl(ArticleCategory category, int page, LocalDate date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        String formattedDate = date.format(formatter);
-        String url = String.format("http://news.naver.com/main/list.nhn?mode=LSD&mid=sec&sid1=%s&page=%d&date=%s", category.getSid(), page, formattedDate);
-        return url;
-    }
-
-    private Optional<CrawledNewsDto.CrawledInfo> crawlArticleDetail(String articleUrl, ArticleCategory category) {
+    public Optional<CrawledNewsDto.CrawledInfo> crawlArticleDetail(String articleUrl, ArticleCategory category) {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -103,30 +89,16 @@ public class NaverNewsCrawler {
         }
     }
 
-    private List<String> getArticleUrls(String url) {
-        try {
 
-            List<String> postUrls = new ArrayList<>();
-            // 각 페이지에 있는 기사들 가져오기
-            Element body = Jsoup.connect(url).get().body();
-            Elements tempPost = body.select(".newsflash_body .type06_headline li dl"); // Update your_selector to match your HTML structure
-
-            tempPost.addAll(body.select(".newsflash_body .type06 li dl")) ;
-
-            // 각 페이지에 있는 기사들의 url 저장
-            for (Element element : tempPost) {
-                Element link = element.selectFirst("a[href]");
-
-                String href = link.attr("href");
-                postUrls.add(href);
-
-            }
-
-            return postUrls;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    private String createSearchUrl(ArticleCategory category, int page, LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String formattedDate = date.format(formatter);
+        String url = String.format("%s/main/list.nhn?mode=LSD&mid=sec&sid1=%s&page=%d&date=%s",newsSiteHost, category.getSid(), page, formattedDate);
+        return url;
     }
+
+
+
 
 
 }

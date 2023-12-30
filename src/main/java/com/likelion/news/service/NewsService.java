@@ -89,6 +89,9 @@ public class NewsService {
      * @throws
     */
     public Optional<CrawledNewsDto.CrawledInfo> getArticleDetail(String url, ArticleCategory category){
+        try{
+            Thread.sleep(1000);
+        }catch (InterruptedException e) {}
         return naverNewsCrawler.crawlArticleDetail(url, category);
     }
 

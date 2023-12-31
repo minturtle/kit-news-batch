@@ -29,3 +29,5 @@ nanoId:
 news:
   host:
     naver: http://news.naver.com
+  crawl:
+    size: 30

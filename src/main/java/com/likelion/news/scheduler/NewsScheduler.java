@@ -31,15 +31,17 @@ public class NewsScheduler {
     @Value("${clova.summary.size}")
     private Integer summarizationSize;
 
+    @Value("${news.crawl.size}")
+    private Integer crawlingSize;
 
-    @Scheduled(cron = "0 00 18 * * *")
+    @Scheduled(cron = "0 0 18 * * *")
     public void runCrawling(){
         try{
             log.info("Crawler Scheduler Started");
 
 
             for(ArticleCategory category : Arrays.stream(ArticleCategory.values()).toList()){
-                List<String> articleUrls = newsService.getArticleUrls(category, 10, LocalDate.now());
+                List<String> articleUrls = newsService.getArticleUrls(category, crawlingSize, LocalDate.now());
 
 
                 for(String articleUrl : articleUrls){

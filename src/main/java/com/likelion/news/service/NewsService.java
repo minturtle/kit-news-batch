@@ -148,7 +148,7 @@ public class NewsService {
         LocalDateTime startDateTime = articleDate.atStartOfDay();
         LocalDateTime endDateTime = articleDate.plusDays(1).atStartOfDay();
         List<CrawledNews> newsList = crawledNewsRepository
-                .findAllByArticleCategoryAndArticleDateIs(articleType.name(), startDateTime, endDateTime);
+                .findAllByArticleCategoryAndArticleDateIs(articleType, startDateTime, endDateTime);
 
 
         if(newsList.isEmpty()){

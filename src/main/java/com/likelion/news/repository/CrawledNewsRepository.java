@@ -14,7 +14,7 @@ public interface CrawledNewsRepository extends CrudRepository<CrawledNews, Long>
 
     @Query("SELECT n FROM CrawledNews n WHERE n.articleCategory = :articleCategory AND n.articleDatetime BETWEEN :startDate AND :endDate")
     List<CrawledNews> findAllByArticleCategoryAndArticleDateIs(
-            @Param("articleCategory") String articleCategory,
+            @Param("articleCategory") ArticleCategory articleCategory,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );

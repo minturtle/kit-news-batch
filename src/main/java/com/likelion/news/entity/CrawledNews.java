@@ -1,6 +1,7 @@
 package com.likelion.news.entity;
 
 
+import com.likelion.news.enums.ArticleCategory;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,7 +22,8 @@ public class CrawledNews {
 
     private LocalDateTime articleDatetime;
 
-    private String articleCategory;
+    @Enumerated(EnumType.STRING)
+    private ArticleCategory articleCategory;
 
     private String media;
 

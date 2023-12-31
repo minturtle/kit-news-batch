@@ -11,7 +11,7 @@ spring:
         show_sql: true
         format_sql: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
 
 clova:
   url: https://naveropenapi.apigw.ntruss.com/text-summary/v1/summarize
